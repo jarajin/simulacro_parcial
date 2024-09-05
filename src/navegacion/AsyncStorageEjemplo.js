@@ -9,7 +9,6 @@ const AsyncStorageEjemplo = () => {
   const [dataList, setDataList] = useState([]);
   const [isDisabled, setIsDisabled] = useState(false);
 
-
   useEffect(() => {
     listar();
   }, []);
@@ -25,11 +24,11 @@ const AsyncStorageEjemplo = () => {
     }
   };
 
-  const editar = async (id, value) => {
+  const editar = (id, value) => {
     setKey(id);
     setName(value);
     setIsDisabled(true);
-  }
+  };
 
   const guardar = async () => {
     try {
@@ -37,17 +36,18 @@ const AsyncStorageEjemplo = () => {
         Alert.alert('Error', 'El campo no puede estar vacío');
         return;
       }
-      if(key.trim() === '') { //Guardar
-        const key = `item_${Date.now()}`;
-        await AsyncStorage.setItem(key, name);
+      if (key.trim() === '') {
+        // Crear un nuevo ítem
+        const newKey = `item_${Date.now()}`;
+        await AsyncStorage.setItem(newKey, name);
         setName('');
         setKey('');
         listar();
         Alert.alert('Éxito', 'Datos guardados');
-
-      }else{//Actualizar
-       actualizar();
-     }
+      } else {
+        // Actualizar el ítem existente
+        await actualizar();
+      }
     } catch (error) {
       Alert.alert('Error', 'Error al guardar los datos');
       console.error(error);
@@ -67,7 +67,6 @@ const AsyncStorageEjemplo = () => {
     }
   };
 
-
   const eliminar = async (id) => {
     try {
       await AsyncStorage.removeItem(id);
@@ -79,26 +78,25 @@ const AsyncStorageEjemplo = () => {
     }
   };
 
-
   return (
     <View style={styles.container}>
       <View>
-          <Input
-            placeholder="Código"
-            disabled={isDisabled}
-            value={key}
-            style={styles.input}
-          />
+        <Input
+          placeholder="Código"
+          disabled={isDisabled}
+          value={key}
+          style={styles.input}
+        />
       </View>
       <View>
-          <Input
-            placeholder="Ingrese un nombre"
-            value={name}
-            onChangeText={setName}
-            style={styles.input}
-          />
+        <Input
+          placeholder="Ingrese un nombre"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
       </View>
-      <Button  title={isDisabled ? "Actualizar" : "Guardar"} onPress={guardar} />
+      <Button title={isDisabled ? "Actualizar" : "Guardar"} onPress={guardar} />
       <Text h4 style={styles.title}>Lista de Datos:</Text>
       {dataList.map(({ id, value }) => (
         <ListItem key={id} bottomDivider>
@@ -106,13 +104,20 @@ const AsyncStorageEjemplo = () => {
             <ListItem.Title>{value}</ListItem.Title>
             <ListItem.Subtitle>{id}</ListItem.Subtitle>
           </ListItem.Content>
-          <Button  icon={{ name: 'edit',type: 'font-awesome',size: 15,color: 'white',}} onPress={() => editar(id, value)} />
-          <Button  icon={{ name: 'trash',type: 'font-awesome',size: 15,color: 'white',}} onPress={() => eliminar(id)} />
+          <Button
+            icon={{ name: 'edit', type: 'font-awesome', size: 15, color: 'white' }}
+            onPress={() => editar(id, value)}
+          />
+          <Button
+            icon={{ name: 'trash', type: 'font-awesome', size: 15, color: 'white' }}
+            onPress={() => eliminar(id)}
+          />
         </ListItem>
       ))}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -124,9 +129,6 @@ const styles = StyleSheet.create({
   title: {
     marginVertical: 10,
   },
-  overlayContent: {
-    width: '80%',
-    padding: 20,
-  },
 });
-export default AsyncStorageEjemplo
+
+export default AsyncStorageEjemplo;
